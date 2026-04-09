@@ -8,6 +8,14 @@ The move-text-default-bindings function sets:
 - M-p → move-text-up (move line or active region up)
 - M-n → move-text-down (move line or active region down)
 
+## Installation
+
+``` elisp
+(add-to-list 'load-path "/path/to/move-text")
+(require 'move-text)
+(move-text-default-bindings)
+```
+
 ## Original Version
 
 This is a modified version of emacsfodder/move-text.

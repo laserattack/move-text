@@ -1,12 +1,13 @@
-;;; move-text.el --- Move current line or region with M-up or M-down. -*- lexical-binding: t; -*-
+;;; move-text.el --- Move current line or region with M-p or M-n. -*- lexical-binding: t; -*-
 
 ;; filename: move-text.el
-;; Description: Move current line or region with M-up or M-down.
-;; Author: Jason Milkins <jasonm23@gmail.com>
+;; Description: Move current line or region with M-p (up) or M-n (down).
+;; Author: Jason Milkins <jasonm23@gmail.com> (modified by laserattack)
 ;; Keywords: edit
-;; Url: https://github.com/emacsfodder/move-text
+;; Url: https://github.com/laserattack/move-text
+;; Original-Url: https://github.com/emacsfodder/move-text
 ;; Compatibility: GNU Emacs 25.1
-;; Version: 2.0.10
+;; Version: 2.0.10-custom
 ;;
 ;;; This file is NOT part of GNU Emacs
 
@@ -29,14 +30,17 @@
 
 ;;; Commentary:
 ;;
-;; MoveText 2.0.0 is a re-write of the old move-text and compatible with >= Emacs 25.1
+;; MoveText - custom version with improved region handling.
 ;;
-;; It allows you to move the current line using M-up / M-down if a
+;; It allows you to move the current line using M-p / M-n if a
 ;; region is marked, it will move the region instead.
+;;
+;; Features:
+;; - Always moves whole lines (region expands to full lines)
+;; - Default keybindings changed to M-p (up) and M-n (down)
 ;;
 ;; Using the prefix (C-u *number* or META *number*) you can predefine how
 ;; many lines move-text will travel.
-;;
 
 ;;; Installation:
 ;;
@@ -52,8 +56,8 @@
 
 ;;; Acknowledgements:
 ;;
-;;  Original v1.x was a Feature extracted from basic-edit-toolkit.el - by Andy Stewart (LazyCat)
-;;
+;; Original v1.x was a Feature extracted from basic-edit-toolkit.el - by Andy Stewart (LazyCat)
+;; Custom modifications by user.
 
 ;;; Code:
 (require 'cl-lib)
@@ -149,12 +153,23 @@ We use `prefix-numeric-value' to return a number.
 (defun move-text-region (start end n)
   "Move the current region (START END) up or down by N lines."
   (interactive (move-text-get-region-and-prefix))
+  (save-excursion
+    (goto-char start)
+    (setq start (line-beginning-position))
+    (goto-char end)
+    (unless (bolp)
+      (setq end (1+ (line-end-position)))))
   (let ((line-text (delete-and-extract-region start end)))
     (forward-line n)
-    (let ((start (point)))
+    (let ((start-pos (point)))
       (insert line-text)
+      (save-excursion
+        (goto-char start-pos)
+        (unless (bolp)
+          (insert "\n")
+          (setq start-pos (1+ start-pos))))
       (setq deactivate-mark nil)
-      (set-mark start))))
+      (set-mark start-pos))))
 
 ;;;###autoload
 (defun move-text-region-up (start end n)
@@ -187,10 +202,10 @@ We use `prefix-numeric-value' to return a number.
 
 ;;;###autoload
 (defun move-text-default-bindings ()
-  "Bind `move-text-up' and `move-text-down' to M-up & M-down."
+  "Bind `move-text-up' and `move-text-down' to M-p & M-n."
   (interactive)
-  (global-set-key [M-down] 'move-text-down)
-  (global-set-key [M-up]   'move-text-up))
+  (global-set-key (kbd "M-p") 'move-text-up)
+  (global-set-key (kbd "M-n") 'move-text-down))
 
 (provide 'move-text)
 

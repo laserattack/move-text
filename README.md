@@ -19,6 +19,10 @@ The move-text-default-bindings function sets:
 (move-text-default-bindings)
 ```
 
+## Demonstration
+
+![](move-text.gif)
+
 ## Original Version
 
 This is a modified version of emacsfodder/move-text.

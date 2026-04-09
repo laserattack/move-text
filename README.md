@@ -10,8 +10,11 @@ The move-text-default-bindings function sets:
 
 ## Installation
 
+1. Clone this repo
+2. Add to your config:
+
 ``` elisp
-(add-to-list 'load-path "/path/to/move-text")
+(add-to-list 'load-path "/path/to/this/repo")
 (require 'move-text)
 (move-text-default-bindings)
 ```
